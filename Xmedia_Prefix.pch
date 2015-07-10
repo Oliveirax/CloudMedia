@@ -1,0 +1,11 @@
+//
+// Prefix header for all source files of the 'Xmedia' target in the 'Xmedia' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+	#import "Protocols.h"
+	#import "Constants.h"
+
+#endif
