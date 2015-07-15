@@ -97,7 +97,7 @@ NSString *const AlbumContentsTableViewCellIdentifier = @"AlbumContentsTableViewC
 
 #pragma mark - Multiple Item table view Cell implementation
 -(void)select:(BOOL)selected itemWithIndex:(NSUInteger)index{
-    ThumbnailView *tv = [items objectAtIndex:index];
+    ThumbnailView *tv = items[index];
     [tv setSelected:selected];
 }
 @end

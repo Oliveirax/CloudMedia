@@ -46,7 +46,7 @@ static  NSString *dataDirectory;     //DATA is inside Library. It holds all the 
 + (NSString *)getDocumentsDirectory
 {
     if (!documentsDirectory){
-        documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        documentsDirectory = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     }
     return documentsDirectory;
 }
@@ -55,7 +55,7 @@ static  NSString *dataDirectory;     //DATA is inside Library. It holds all the 
 + (NSString *)getLibraryDirectory
 {
     if (!libraryDirectory){
-        libraryDirectory = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        libraryDirectory = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
     }
     return libraryDirectory;
 }
@@ -343,7 +343,7 @@ static  NSString *dataDirectory;     //DATA is inside Library. It holds all the 
         
         NSTimeInterval duration = [player duration];
         NSLog(@"MPMVPLAYER duration: %.2f", duration);
-        [properties setValue:[NSNumber numberWithDouble:duration] forKey:keyAssetDuration];
+        [properties setValue:@(duration) forKey:keyAssetDuration];
         [player stop];
         [player release];
         
@@ -439,7 +439,7 @@ static  NSString *dataDirectory;     //DATA is inside Library. It holds all the 
 //save a dictionary, its path should be relative to DATA
 + (BOOL)saveDictionaryInDataDir:(NSMutableDictionary *)dict
 {
-    NSString *path = [[FileUtils getDataDirectory] stringByAppendingPathComponent:[dict objectForKey:keySelfFilePath]];
+    NSString *path = [[FileUtils getDataDirectory] stringByAppendingPathComponent:dict[keySelfFilePath]];
     return [dict writeToFile:path atomically:YES];
 }
 
@@ -501,11 +501,11 @@ static  NSString *dataDirectory;     //DATA is inside Library. It holds all the 
 	//type and duration
 	if ([name hasPrefix:kImageFilePrefix ]){
 		[properties setValue:kAssetTypeImage forKey:keyAssetType];
-        [properties setValue:[NSNumber numberWithDouble:-1] forKey:keyAssetDuration];
+        [properties setValue:@-1.0 forKey:keyAssetDuration];
 	}
 	else if ([name hasPrefix:kVideoFilePrefix]){
 		[properties setValue:kAssetTypeVideo forKey:keyAssetType];
-        [properties setValue:[NSNumber numberWithDouble:0] forKey:keyAssetDuration];
+        [properties setValue:@0.0 forKey:keyAssetDuration];
 	}
 	
 	Asset *asset = [[Asset alloc ]initWithDictionary:properties];
@@ -521,7 +521,7 @@ static  NSString *dataDirectory;     //DATA is inside Library. It holds all the 
     assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);
  
     NSError *error = nil;
-    BOOL success = [URL setResourceValue: [NSNumber numberWithBool: YES]
+    BOOL success = [URL setResourceValue: @YES
                                   forKey: NSURLIsExcludedFromBackupKey error: &error];
     if(!success){
         NSLog(@"Error excluding %@ from backup %@", [URL lastPathComponent], error);

@@ -149,7 +149,7 @@ static const CGRect renameTextLandscapeRect = { { 106.0f, 9.0f }, { 340.0f, 25.0
     //[self.navigationController.toolbar setItems:self.normalModeToolbarButtons animated:NO];
     
     // is this the root album? if yes, show settings button
-    if ([self.navigationController.viewControllers objectAtIndex:0]==self){
+    if ((self.navigationController.viewControllers)[0]==self){
         self.navigationItem.hidesBackButton = YES;
         self.navigationItem.leftBarButtonItem = self.settingsButton;
     } else{
@@ -417,7 +417,7 @@ static const CGRect renameTextLandscapeRect = { { 106.0f, 9.0f }, { 340.0f, 25.0
 	[self.renameTextField resignFirstResponder];
     [self.renameTextField removeFromSuperview];
     // any kind of animation here provokes flicker
-	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:self.renameIndexPath] withRowAnimation:UITableViewRowAnimationNone];
+	[self.tableView reloadRowsAtIndexPaths:@[self.renameIndexPath] withRowAnimation:UITableViewRowAnimationNone];
     
     self.renameTextField = nil;
     self.renameAlbumName = nil;
@@ -498,7 +498,7 @@ static const CGRect renameTextLandscapeRect = { { 106.0f, 9.0f }, { 340.0f, 25.0
            
         [[LibraryManager getInstance]loadCurrentUserLibrary];
         NSMutableDictionary *library = [LibraryManager getInstance].currentLibrary;
-        AssetsLibrary *newLibrary = [[AssetsLibrary alloc]initWithPath:[library objectForKey:keyLibraryRootAlbumPath]];
+        AssetsLibrary *newLibrary = [[AssetsLibrary alloc]initWithPath:library[keyLibraryRootAlbumPath]];
         self.assetsLibrary = newLibrary;
         [newLibrary release];
         self.title = self.assetsLibrary.name;
@@ -653,7 +653,7 @@ static const CGRect renameTextLandscapeRect = { { 106.0f, 9.0f }, { 340.0f, 25.0
 - (void)taskProgressed:(CGFloat)amount
 {
     // UI elements must be updated in main thread
-    [self performSelectorOnMainThread:@selector(taskProgressedHelper:) withObject:[NSNumber numberWithFloat:amount] waitUntilDone:NO];
+    [self performSelectorOnMainThread:@selector(taskProgressedHelper:) withObject:@(amount) waitUntilDone:NO];
 }
 
 
@@ -780,7 +780,7 @@ static const CGRect renameTextLandscapeRect = { { 106.0f, 9.0f }, { 340.0f, 25.0
     }
     else{
         // is this the root album? if yes, show settings button
-        if ([self.navigationController.viewControllers objectAtIndex:0]==self){
+        if ((self.navigationController.viewControllers)[0]==self){
             [self.navigationItem setHidesBackButton:YES animated:animated];
             [self.navigationItem setLeftBarButtonItem:self.settingsButton animated:animated];
         } else{
@@ -795,7 +795,7 @@ static const CGRect renameTextLandscapeRect = { { 106.0f, 9.0f }, { 340.0f, 25.0
         
         //edit mode animation must be performed later to avoid being messed up by reloadData,
         //which is called by deselectAllItems and commitRename
-        NSNumber *isAnimated = [NSNumber numberWithBool:animated];
+        NSNumber *isAnimated = @(animated);
         [self performSelector:@selector(exitEditModeAnimated:) withObject:isAnimated afterDelay:0.3];
         
     }

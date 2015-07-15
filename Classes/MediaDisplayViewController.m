@@ -245,7 +245,7 @@
     page.index = index;
     page.frame = [self frameForPageAtIndex:index];
 	
-	Asset *asset = [assets objectAtIndex:index];
+	Asset *asset = assets[index];
 	
 	TapDetectingImageView *tdiv = [[TapDetectingImageView alloc] initWithImage:[asset image]];
     [page setImage:tdiv];
@@ -406,7 +406,7 @@
 	if (tapPoint.x == PLAY_BUTTON_TAG){
 	
 		// start movie player
-		Asset *asset = [assets objectAtIndex:currentIndex];
+		Asset *asset = assets[currentIndex];
 		MPMoviePlayerViewController *mp = [[MPMoviePlayerViewController alloc] initWithContentURL: [asset url]];
         // Register to receive a notification when the movie has finished playing.  
         [[NSNotificationCenter defaultCenter] addObserver:self  
@@ -471,7 +471,7 @@
 - (void)moviePlayerFinished:(NSNotification*)notification{
 	MPMoviePlayerController *mp = [notification object];
     
-    NSNumber *reason = [[notification userInfo]objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
+    NSNumber *reason = [notification userInfo][MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self  
 													name:MPMoviePlayerPlaybackDidFinishNotification  

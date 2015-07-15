@@ -108,7 +108,7 @@ static LibraryManager* instance;
     
     
     NSMutableDictionary *users = [[NSMutableDictionary alloc]init];
-    [users setObject:kUsersFileName forKey:keySelfFilePath];
+    users[keySelfFilePath] = kUsersFileName;
     BOOL success = [FileUtils saveDictionaryInDataDir:users];
     [users release];
     return success;
@@ -130,7 +130,7 @@ static LibraryManager* instance;
 	NSMutableDictionary *users = [FileUtils newDictionaryFromFileInDataDir:kUsersFileName];
 	
     //verify if the user already exists
-    if ([users objectForKey:name ] != nil){ 
+    if (users[name] != nil){ 
         NSLog(@"user %@ already exists. returning...", name);
         [users release];
         return NO;
@@ -165,42 +165,42 @@ static LibraryManager* instance;
     //create root album
     NSString *rootAlbumFilePath = [albumsDirectory stringByAppendingPathComponent:@"ALB0001.plist"];
     NSMutableDictionary *album = [[NSMutableDictionary alloc] init ];
-    [album setObject:rootAlbumFilePath forKey:keySelfFilePath];
-    [album setObject:kRootAlbumName forKey:keyAlbumName];
-    [album setObject:kContentTypeAlbums forKey:keyAlbumContentType];
-    [album setObject:[NSMutableArray array] forKey:keyAlbumItemsArray];
-    [album setObject:[NSMutableArray array] forKey:keyAlbumKeywordsArray];
-    [album setObject:[NSMutableDictionary dictionary] forKey:keyAlbumItemsIndexDict];
-    [album setObject:[NSNumber numberWithFloat:3] forKey:keyAlbumSlideDuration];
-    [album setObject:kTransitionRandom forKey:keyAlbumSlideTransition];
-    [album setObject:[NSNumber numberWithFloat:0.5] forKey:keyAlbumTransitionDuration];
-    [album setObject:[NSNumber numberWithBool:NO] forKey:keyAlbumRepeat];
-    [album setObject:[NSNumber numberWithBool:NO] forKey:keyAlbumShuffle];
+    album[keySelfFilePath] = rootAlbumFilePath;
+    album[keyAlbumName] = kRootAlbumName;
+    album[keyAlbumContentType] = kContentTypeAlbums;
+    album[keyAlbumItemsArray] = [NSMutableArray array];
+    album[keyAlbumKeywordsArray] = [NSMutableArray array];
+    album[keyAlbumItemsIndexDict] = [NSMutableDictionary dictionary];
+    album[keyAlbumSlideDuration] = @3.0f;
+    album[keyAlbumSlideTransition] = kTransitionRandom;
+    album[keyAlbumTransitionDuration] = @0.5f;
+    album[keyAlbumRepeat] = @NO;
+    album[keyAlbumShuffle] = @NO;
     success &= [FileUtils saveDictionaryInDataDir:album];
     [album release];
        
     //create library plist
     NSString *libraryFilePath = [userDirectory stringByAppendingPathComponent:kLibraryFileName];
     NSMutableDictionary *library = [[NSMutableDictionary alloc] init];
-    [library setObject:libraryFilePath                  forKey:keySelfFilePath];
-    [library setObject:name                             forKey:keyLibraryUsername];
-    [library setObject:password                         forKey:keyLibraryPassword];
-    [library setObject:rootAlbumFilePath                    forKey:keyLibraryRootAlbumPath];
-    [library setObject:albumsDirectory                  forKey:keyLibraryAlbumsDirectoryPath];
-    [library setObject:vidcapsDirectory                 forKey:keyLibraryVidcapsDirectoryPath];
-    [library setObject:fullScreenDirectory              forKey:keyLibraryFullScreenDirectoryPath];
-    [library setObject:mediaDirectory                   forKey:keyLibraryMediaDirectoryPath];
-    [library setObject:thumbsDirectory                  forKey:keyLibraryThumbsDirectoryPath];
-    [library setObject:[NSMutableDictionary dictionary] forKey:keyLibraryAssetReferenceDict];
+    library[keySelfFilePath] = libraryFilePath;
+    library[keyLibraryUsername] = name;
+    library[keyLibraryPassword] = password;
+    library[keyLibraryRootAlbumPath] = rootAlbumFilePath;
+    library[keyLibraryAlbumsDirectoryPath] = albumsDirectory;
+    library[keyLibraryVidcapsDirectoryPath] = vidcapsDirectory;
+    library[keyLibraryFullScreenDirectoryPath] = fullScreenDirectory;
+    library[keyLibraryMediaDirectoryPath] = mediaDirectory;
+    library[keyLibraryThumbsDirectoryPath] = thumbsDirectory;
+    library[keyLibraryAssetReferenceDict] = [NSMutableDictionary dictionary];
     success &= [FileUtils saveDictionaryInDataDir:library];
     
     //add new user to users plist
     NSMutableDictionary *newUser = [[NSMutableDictionary alloc] init];
-    [newUser setObject:name             forKey:keyUsersUsername];
-    [newUser setObject:password         forKey:keyUsersPassword];
-    [newUser setObject:userDirectory    forKey:keyUsersUserDirectoryPath];
-    [newUser setObject:libraryFilePath  forKey:keyUsersUserLibraryFilePath];
-    [users setObject:newUser            forKey:name];
+    newUser[keyUsersUsername] = name;
+    newUser[keyUsersPassword] = password;
+    newUser[keyUsersUserDirectoryPath] = userDirectory;
+    newUser[keyUsersUserLibraryFilePath] = libraryFilePath;
+    users[name] = newUser;
     success &= [FileUtils saveDictionaryInDataDir:users];
     
     [newUser release];
@@ -219,7 +219,7 @@ static LibraryManager* instance;
 	NSMutableDictionary *users = [FileUtils newDictionaryFromFileInDataDir:kUsersFileName];
 	
     //get the new user
-    NSMutableDictionary *user = [users objectForKey:name];
+    NSMutableDictionary *user = users[name];
     
     //verify if the user exists
     if (user == nil){ 
@@ -229,7 +229,7 @@ static LibraryManager* instance;
     }
     
     // verify password
-    NSString *userPassword = [user objectForKey:keyUsersPassword];
+    NSString *userPassword = user[keyUsersPassword];
     if(![userPassword isEqualToString:password]){
         NSLog(@"User-pass pair incorrect");
         [users release];
@@ -242,7 +242,7 @@ static LibraryManager* instance;
     //load the user's library
     [self loadCurrentUserLibrary];
     
-    NSLog (@"current User is: %@",[_currentUser objectForKey:keyUsersUsername]);
+    NSLog (@"current User is: %@",_currentUser[keyUsersUsername]);
     
     [users release];
     return YES;
@@ -258,16 +258,16 @@ static LibraryManager* instance;
 	NSMutableDictionary *users = [FileUtils newDictionaryFromFileInDataDir:kUsersFileName];
     
     //verify if the user exists
-    if ([users objectForKey:name ] == nil){ 
+    if (users[name] == nil){ 
         NSLog(@"user does not exist");
         [users release];
         return NO;
     }
     
-    NSMutableDictionary *user = [users objectForKey:name];
+    NSMutableDictionary *user = users[name];
     
     // verify password ???????????????????????????????????????????????????????? WHY?
-    NSString *userPassword = [user objectForKey:keyUsersPassword];
+    NSString *userPassword = user[keyUsersPassword];
     if(![userPassword isEqualToString:password]){
         NSLog(@"User-pass pair incorrect");
         [users release];
@@ -275,7 +275,7 @@ static LibraryManager* instance;
     }
     
     //remove from disk
-    NSString *path = [self addDataDirTo:[user objectForKey:keyUsersUserDirectoryPath]];
+    NSString *path = [self addDataDirTo:user[keyUsersUserDirectoryPath]];
     if(![FileUtils removeItemAtPath:path]){
         [users release];
         return NO;
@@ -302,9 +302,9 @@ static LibraryManager* instance;
     //save previous library
     [self saveCurrentUserLibrary];
     
-     NSLog(@"Loading Library for: %@",[_currentUser objectForKey:keyUsersUsername]);
+     NSLog(@"Loading Library for: %@",_currentUser[keyUsersUsername]);
     
-    _currentLibrary = [FileUtils newDictionaryFromFileInDataDir:[_currentUser objectForKey:keyUsersUserLibraryFilePath]];
+    _currentLibrary = [FileUtils newDictionaryFromFileInDataDir:_currentUser[keyUsersUserLibraryFilePath]];
  }
 
 
@@ -319,7 +319,7 @@ static LibraryManager* instance;
 
 - (NSString *)currentUserDir
 {
-    return [self.currentUser objectForKey:keyUsersUserDirectoryPath];
+    return (self.currentUser)[keyUsersUserDirectoryPath];
 }
 
 
@@ -335,20 +335,20 @@ static LibraryManager* instance;
 
 - (NSString *)createAlbumWithName:(NSString *)albumName
 {
-    NSString *albumFilePath = [FileUtils getNextAlbumNameInUserDir:[_currentUser objectForKey:keyUsersUserDirectoryPath] ];
+    NSString *albumFilePath = [FileUtils getNextAlbumNameInUserDir:_currentUser[keyUsersUserDirectoryPath] ];
     
     NSMutableDictionary *album = [[NSMutableDictionary alloc] init ];
-    [album setObject:albumFilePath forKey:keySelfFilePath];
-    [album setObject:albumName forKey:keyAlbumName];
-    [album setObject:kContentTypeAlbums forKey:keyAlbumContentType];
-    [album setObject:[NSMutableArray array] forKey:keyAlbumItemsArray];
-    [album setObject:[NSMutableArray array] forKey:keyAlbumKeywordsArray];
-    [album setObject:[NSMutableDictionary dictionary] forKey:keyAlbumItemsIndexDict];
-    [album setObject:[NSNumber numberWithFloat:3] forKey:keyAlbumSlideDuration];
-    [album setObject:kTransitionRandom forKey:keyAlbumSlideTransition];
-    [album setObject:[NSNumber numberWithFloat:0.5] forKey:keyAlbumTransitionDuration];
-    [album setObject:[NSNumber numberWithBool:NO] forKey:keyAlbumRepeat];
-    [album setObject:[NSNumber numberWithBool:NO] forKey:keyAlbumShuffle];
+    album[keySelfFilePath] = albumFilePath;
+    album[keyAlbumName] = albumName;
+    album[keyAlbumContentType] = kContentTypeAlbums;
+    album[keyAlbumItemsArray] = [NSMutableArray array];
+    album[keyAlbumKeywordsArray] = [NSMutableArray array];
+    album[keyAlbumItemsIndexDict] = [NSMutableDictionary dictionary];
+    album[keyAlbumSlideDuration] = @3.0f;
+    album[keyAlbumSlideTransition] = kTransitionRandom;
+    album[keyAlbumTransitionDuration] = @0.5f;
+    album[keyAlbumRepeat] = @NO;
+    album[keyAlbumShuffle] = @NO;
     
     if(![FileUtils saveDictionaryInDataDir:album]){
         [album release];
@@ -366,9 +366,9 @@ static LibraryManager* instance;
     NSMutableDictionary *parentAlbum = [FileUtils newDictionaryFromFileInDataDir:parentAlbumFilePath];
     
     // get albums array and index
-    NSMutableArray *albums = [parentAlbum objectForKey:keyAlbumItemsArray];
-    NSMutableDictionary *index = [parentAlbum objectForKey:keyAlbumItemsIndexDict];
-    NSNumber *albumIndex = [index objectForKey:albumName];
+    NSMutableArray *albums = parentAlbum[keyAlbumItemsArray];
+    NSMutableDictionary *index = parentAlbum[keyAlbumItemsIndexDict];
+    NSNumber *albumIndex = index[albumName];
     
     // check if album exists
     if (albumIndex == nil){
@@ -377,7 +377,7 @@ static LibraryManager* instance;
         return nil;
     }
     
-    NSString *albumFilePath = [[albums objectAtIndex:[albumIndex unsignedIntegerValue]]copy];
+    NSString *albumFilePath = [albums[[albumIndex unsignedIntegerValue]]copy];
     [parentAlbum release];
     return [albumFilePath autorelease]; 
 }
@@ -419,12 +419,12 @@ static LibraryManager* instance;
     NSString *albumPath = [self createAlbumWithName:albumName];
     
     //add it to the parent album's array of items
-    NSMutableArray *albumsArray = [parentAlbum objectForKey:keyAlbumItemsArray];
+    NSMutableArray *albumsArray = parentAlbum[keyAlbumItemsArray];
     [albumsArray addObject:albumPath];
     
     //add it to the index
-    NSMutableDictionary *itemsIndex = [parentAlbum objectForKey:keyAlbumItemsIndexDict];
-    [itemsIndex setObject:[NSNumber numberWithUnsignedInteger:[albumsArray count]-1] forKey:albumName];
+    NSMutableDictionary *itemsIndex = parentAlbum[keyAlbumItemsIndexDict];
+    itemsIndex[albumName] = @([albumsArray count]-1);
     
     //save parent album
     if(![FileUtils saveDictionaryInDataDir:parentAlbum]){
@@ -488,7 +488,7 @@ static LibraryManager* instance;
     
     //delete album thumb
     NSMutableDictionary *theAlbum = [FileUtils newDictionaryFromFileInDataDir:albumFile];
-    [FileUtils removeItemInDataDir:[theAlbum objectForKey:keyAlbumThumbFilePath]];
+    [FileUtils removeItemInDataDir:theAlbum[keyAlbumThumbFilePath]];
     [theAlbum release];
     
     
@@ -499,9 +499,9 @@ static LibraryManager* instance;
     }
     
     //remove album from parent
-    NSMutableDictionary *itemsIndex = [parentAlbum objectForKey:keyAlbumItemsIndexDict];
-    NSUInteger albumIndex = [[itemsIndex objectForKey:albumName] unsignedIntegerValue];
-    NSMutableArray *albumsArray = [parentAlbum objectForKey:keyAlbumItemsArray];
+    NSMutableDictionary *itemsIndex = parentAlbum[keyAlbumItemsIndexDict];
+    NSUInteger albumIndex = [itemsIndex[albumName] unsignedIntegerValue];
+    NSMutableArray *albumsArray = parentAlbum[keyAlbumItemsArray];
     [albumsArray removeObjectAtIndex:albumIndex];
     
     //rebuild index
@@ -523,21 +523,21 @@ static LibraryManager* instance;
     NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:albumFilePath];
     
     //assets album - nothing to delete, except the thumb
-    if ([[album objectForKey:keyAlbumContentType] isEqualToString:kContentTypeAssets]){
+    if ([album[keyAlbumContentType] isEqualToString:kContentTypeAssets]){
         
-        [FileUtils removeItemInDataDir:[album objectForKey:keyAlbumThumbFilePath]];
+        [FileUtils removeItemInDataDir:album[keyAlbumThumbFilePath]];
     
         [album release];
         return;
     }
     
-    NSMutableArray *albumsArray = [album objectForKey:keyAlbumItemsArray];
+    NSMutableArray *albumsArray = album[keyAlbumItemsArray];
     for (NSString *childPath in albumsArray){
         [self removeChildrenOfAlbum:childPath];
         [FileUtils removeItemAtPath:[self addDataDirTo:childPath]];
     }
     
-    [FileUtils removeItemInDataDir:[album objectForKey:keyAlbumThumbFilePath]];
+    [FileUtils removeItemInDataDir:album[keyAlbumThumbFilePath]];
     [album release];
 }
 
@@ -551,8 +551,8 @@ static LibraryManager* instance;
         return NO;
     }
     
-    NSMutableArray *albumsArray = [parentAlbum objectForKey:keyAlbumItemsArray];
-    NSString *album = [[albumsArray objectAtIndex:fromIndex]copy];
+    NSMutableArray *albumsArray = parentAlbum[keyAlbumItemsArray];
+    NSString *album = [albumsArray[fromIndex]copy];
     [albumsArray removeObjectAtIndex:fromIndex];
     [albumsArray insertObject:album atIndex:toIndex];
     [self rebuildIndexInAlbum:parentAlbum];
@@ -575,23 +575,23 @@ static LibraryManager* instance;
     NSLog(@"Rebuilding Albums index...");
     
     // get albums array
-    NSMutableArray *albumsArray = [album objectForKey:keyAlbumItemsArray];
+    NSMutableArray *albumsArray = album[keyAlbumItemsArray];
     
     // create a new Index
     NSMutableDictionary *index = [[NSMutableDictionary alloc ]init ];
     
     //iterate through albums, building a new index
     for (NSUInteger currentIndex = 0; currentIndex < [albumsArray count] ; currentIndex++){
-        NSString *albumFilePath = [albumsArray objectAtIndex:currentIndex];
+        NSString *albumFilePath = albumsArray[currentIndex];
         NSMutableDictionary *theAlbum = [FileUtils newDictionaryFromFileInDataDir:albumFilePath];
-        NSString *albumName = [theAlbum objectForKey:keyAlbumName];
-        NSNumber *albumIndex = [NSNumber numberWithUnsignedInteger:currentIndex];
-        [index setObject:albumIndex forKey:albumName];
+        NSString *albumName = theAlbum[keyAlbumName];
+        NSNumber *albumIndex = @(currentIndex);
+        index[albumName] = albumIndex;
         [theAlbum release];
     }
     
     // replace index with the new one
-    [album setObject:index forKey:keyAlbumItemsIndexDict];
+    album[keyAlbumItemsIndexDict] = index;
     [index release];
     
     return YES;
@@ -643,7 +643,7 @@ static LibraryManager* instance;
         return NO;
     }
     
-    [album setObject:newName forKey:keyAlbumName];
+    album[keyAlbumName] = newName;
     
     //save album
     if(![FileUtils saveDictionaryInDataDir:album]){
@@ -682,13 +682,13 @@ static LibraryManager* instance;
     NSMutableDictionary *parentAlbum = [FileUtils newDictionaryFromFileInDataDir:parentAlbumFilePath];
     
     //assets album - no children
-    if ( [[parentAlbum objectForKey:keyAlbumContentType] isEqualToString:kContentTypeAssets] ){
+    if ( [parentAlbum[keyAlbumContentType] isEqualToString:kContentTypeAssets] ){
         [parentAlbum release];
         return NO;
     }
     
     BOOL result = NO;
-    NSMutableArray *childAlbums = [parentAlbum objectForKey:keyAlbumItemsArray];
+    NSMutableArray *childAlbums = parentAlbum[keyAlbumItemsArray];
     for (NSString * album in childAlbums){
         if ( [album isEqualToString:childAlbumFilePath] ){
             result = YES;
@@ -751,7 +751,7 @@ static LibraryManager* instance;
     }
     
     // get the assets array 	
-	NSMutableArray *itemsArray = [parentAlbum objectForKey:keyAlbumItemsArray];
+	NSMutableArray *itemsArray = parentAlbum[keyAlbumItemsArray];
 	if(!itemsArray){
 		[parentAlbum release];
         return NO;

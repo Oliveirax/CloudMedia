@@ -37,10 +37,10 @@
 - (id)initWithDictionary:(NSMutableDictionary *)dict
 {
     if ((self = [super init])){
-        selfFilePath = [[dict objectForKey:keySelfFilePath]copy];
-        thumbFilePath = [[dict objectForKey:keyAlbumThumbFilePath]copy];
-        name = [[dict objectForKey:keyAlbumName]copy];
-        numberOfAssets = [[dict objectForKey:keyAlbumItemsArray]count];
+        selfFilePath = [dict[keySelfFilePath]copy];
+        thumbFilePath = [dict[keyAlbumThumbFilePath]copy];
+        name = [dict[keyAlbumName]copy];
+        numberOfAssets = [dict[keyAlbumItemsArray]count];
         
 		deviceGroup = nil;
 		image = nil;
@@ -127,7 +127,7 @@
 	}
 	else {
         NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:selfFilePath];
-        NSMutableArray *items = [album objectForKey:keyAlbumItemsArray];
+        NSMutableArray *items = album[keyAlbumItemsArray];
         numberOfAssets = [items count];
         [album release];
 	}
@@ -165,7 +165,7 @@
 	}
 	else {
         NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:selfFilePath];
-		NSMutableArray *items = [album objectForKey:keyAlbumItemsArray];
+		NSMutableArray *items = album[keyAlbumItemsArray];
         for (NSMutableDictionary *item in items){
             
             NSLog(@"Creating Normal Asset");
@@ -202,7 +202,7 @@
                 //get an image from this library's contents
                 if ( self.numberOfItems > 0){
                     NSMutableArray *assets = [[self enumerateAssets] retain];
-                    Asset *asset = [assets objectAtIndex:0];
+                    Asset *asset = assets[0];
                     
                     //scale it
                     image = [[[asset image] imageCroppedAndScaledToSize:CGSizeMake(55, 55)
@@ -220,7 +220,7 @@
                     
                     //add the thumb to this library
                     NSMutableDictionary *library = [FileUtils newDictionaryFromFileInDataDir:selfFilePath];
-                    [library setObject:thumbFilePath forKey:keyAlbumThumbFilePath];
+                    library[keyAlbumThumbFilePath] = thumbFilePath;
                     [FileUtils saveDictionaryInDataDir:library];
                     [library release];
                 }

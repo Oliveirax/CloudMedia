@@ -116,7 +116,7 @@
     self.files = [fileManager contentsOfDirectoryAtPath:_path error:NULL];
     [_selection removeAllObjects];
     for (int i = 0; i < _files.count ; i++){
-        [_selection addObject:[NSNumber numberWithBool:NO]];
+        [_selection addObject:@NO];
     }
     _selectedItemsCount = 0;
 }
@@ -169,9 +169,9 @@
     }
     
     //cell content
-    NSString *fileForCell = [self.files objectAtIndex:indexPath.row];
+    NSString *fileForCell = (self.files)[indexPath.row];
     [cell setTitle:fileForCell];
-	[cell select:[[_selection objectAtIndex:indexPath.row] boolValue] itemWithIndex:AlbumsTableViewCellCheckMark];
+	[cell select:[_selection[indexPath.row] boolValue] itemWithIndex:AlbumsTableViewCellCheckMark];
     //[cell setPosterImage:groupForCell.posterImage];
     
 //    if ([groupForCell isMemberOfClass:[AssetsLibrary class]]){
@@ -196,7 +196,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	AlbumsTableViewCell *cell = (AlbumsTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	NSString *file = [_path stringByAppendingPathComponent:[_files objectAtIndex:indexPath.row]];
+	NSString *file = [_path stringByAppendingPathComponent:_files[indexPath.row]];
     
     NSLog(@"click %@",file);
     
@@ -235,7 +235,7 @@
 //forward the event to the row, in case we are not interested in the taps in subviews
 - (void)forwardTapToCell:(AlbumsTableViewCell *)cell atRow:(NSUInteger)row
 {
-    NSString *file = [_path stringByAppendingPathComponent:[_files objectAtIndex:row]];
+    NSString *file = [_path stringByAppendingPathComponent:_files[row]];
     [self tappedCell:cell atRow:row withFile:file];
 }
 
@@ -273,7 +273,7 @@
     if(self.isEditing && index == AlbumsTableViewCellCheckMark){
         
       
-        if ([[_selection objectAtIndex:cell.row] boolValue] == YES){
+        if ([_selection[cell.row] boolValue] == YES){
             [self deselectItemsFromIndex:cell.row];
         }
         else{
@@ -289,10 +289,10 @@
 
 - (void)selectItemAtIndex:(NSUInteger)index
 {
-	if ([[_selection objectAtIndex:index] boolValue] == YES){
+	if ([_selection[index] boolValue] == YES){
 		return;
 	}
-	[_selection replaceObjectAtIndex:index withObject: [NSNumber numberWithBool:YES] ];
+	_selection[index] = @YES;
 	_selectedItemsCount++;
 	[self selectionHasChanged];
 }
@@ -300,10 +300,10 @@
 
 
 - (void)deselectItemAtIndex:(NSUInteger)index{
-	if ([[_selection objectAtIndex:index] boolValue] == NO){
+	if ([_selection[index] boolValue] == NO){
 		return;
 	}
-	[_selection replaceObjectAtIndex:index withObject: [NSNumber numberWithBool:YES] ];
+	_selection[index] = @YES;
 	_selectedItemsCount--;
 	[self selectionHasChanged];
 }
@@ -314,8 +314,8 @@
 {
     for (NSUInteger i = index ; i < _selection.count ; i++){
       
-        if ([[_selection objectAtIndex:i] boolValue] == YES){break;} //found a selected row - Done!
-        [_selection replaceObjectAtIndex:i withObject: [NSNumber numberWithBool:YES] ];
+        if ([_selection[i] boolValue] == YES){break;} //found a selected row - Done!
+        _selection[i] = @YES;
         _selectedItemsCount++;
     }
     [self selectionHasChanged];
@@ -327,8 +327,8 @@
 {
     for (NSUInteger i = index ; i < _selection.count ; i++){
        
-        if ([[_selection objectAtIndex:i] boolValue] == NO){break;} //found a de-selected row - Done!
-        [_selection replaceObjectAtIndex:i withObject: [NSNumber numberWithBool:NO] ];
+        if ([_selection[i] boolValue] == NO){break;} //found a de-selected row - Done!
+        _selection[i] = @NO;
         _selectedItemsCount--;
     }
     [self selectionHasChanged];
@@ -337,12 +337,12 @@
 - (void)toggleSelectionOfItemAtIndex:(NSUInteger)index
 {
    
-    if ([[_selection objectAtIndex:index] boolValue] == YES){ //deselect
-        [_selection replaceObjectAtIndex:index withObject: [NSNumber numberWithBool:NO] ];
+    if ([_selection[index] boolValue] == YES){ //deselect
+        _selection[index] = @NO;
         _selectedItemsCount--;
     }
     else { //select
-        [_selection replaceObjectAtIndex:index withObject: [NSNumber numberWithBool:YES] ];
+        _selection[index] = @YES;
         _selectedItemsCount++;
     }
     [self selectionHasChanged];
@@ -353,7 +353,7 @@
 - (void)deselectAllItems
 {
     for (NSUInteger i = 0 ; i < _selection.count ; i++){
-       [_selection replaceObjectAtIndex:i withObject: [NSNumber numberWithBool:NO] ];
+       _selection[i] = @NO;
         
     }
     _selectedItemsCount=0;
@@ -364,7 +364,7 @@
 - (void)selectAllItems
 {
     for (NSUInteger i = 0 ; i < _selection.count ; i++){
-        [_selection replaceObjectAtIndex:index withObject: [NSNumber numberWithBool:YES] ];
+        _selection[index] = @YES;
         
     }
     _selectedItemsCount=_selection.count;
@@ -393,8 +393,8 @@
 		
         
 		for (int i = 0; i < _files.count; i++){
-			if ([[_selection objectAtIndex:i] boolValue] == YES){
-                NSString *file = [_path stringByAppendingPathComponent:[_files objectAtIndex:i]];
+			if ([_selection[i] boolValue] == YES){
+                NSString *file = [_path stringByAppendingPathComponent:_files[i]];
                 [cm addFile:file];
                 
 //				if ([a isMemberOfClass:[AssetsLibrary class]]){

@@ -68,7 +68,7 @@
 	
 	if ((self = [super initWithAssetsGroup:nil])) {
         NSMutableDictionary *currLibrary  = [[LibraryManager getInstance] currentLibrary];
-        _assetsLibrary  = [[AssetsLibrary alloc]initWithPath:[currLibrary objectForKey:keyLibraryRootAlbumPath]];
+        _assetsLibrary  = [[AssetsLibrary alloc]initWithPath:currLibrary[keyLibraryRootAlbumPath]];
 		_referencedAssets = [[NSMutableArray alloc]init];
 	}
     return self;
@@ -165,7 +165,7 @@
     
 	//get the files in media directory that are not referenced
     LibraryManager *lm = [LibraryManager getInstance];
-	NSString *libraryPath = [lm.currentUser objectForKey:keyUsersUserDirectoryPath];
+	NSString *libraryPath = (lm.currentUser)[keyUsersUserDirectoryPath];
 	NSString *mediaPath = [lm addDataDirTo:[libraryPath stringByAppendingPathComponent:kMediaDirectoryName]];
 	NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mediaPath error:NULL];
 	

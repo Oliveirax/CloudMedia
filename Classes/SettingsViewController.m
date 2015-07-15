@@ -47,7 +47,7 @@
         _type = ModalViewControllerTypeUserSettings;
         _cancelled = NO;
 		_userChanged = NO;
-		self.currentUser = [[[LibraryManager getInstance]currentUser] objectForKey:keyUsersUsername];
+		self.currentUser = [[LibraryManager getInstance]currentUser][keyUsersUsername];
 	}
 	return self;
 }
@@ -90,7 +90,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-	self.currentUser = [[[LibraryManager getInstance]currentUser] objectForKey:keyUsersUsername];
+	self.currentUser = [[LibraryManager getInstance]currentUser][keyUsersUsername];
 	[self.tableView reloadData];
 }
 
@@ -200,7 +200,7 @@
             else{ //logout
 
                 [[LibraryManager getInstance]loadUserWithName:kGuestUsername withPassword:@""];
-                self.currentUser = [[[LibraryManager getInstance]currentUser] objectForKey:keyUsersUsername];               
+                self.currentUser = [[LibraryManager getInstance]currentUser][keyUsersUsername];               
                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
             }
 			break;

@@ -196,7 +196,7 @@
     //NSUInteger lastPhotoIndex = MIN(lastPhotoInCell, assets.count);
     for ( ; firstPhotoInCell + currentPhotoIndex < lastPhotoInCell ; currentPhotoIndex++) {
         
-		ThumbnailView *tiv = [cell.items objectAtIndex:currentPhotoIndex];
+		ThumbnailView *tiv = (cell.items)[currentPhotoIndex];
 		
 		//blank thumbnails at the end of the list
 		if (firstPhotoInCell + currentPhotoIndex >= _assets.count) {
@@ -205,7 +205,7 @@
 			[tiv setSelected:NO];
 		}
 		else{
-			Asset *asset = [_assets objectAtIndex:firstPhotoInCell + currentPhotoIndex];
+			Asset *asset = _assets[firstPhotoInCell + currentPhotoIndex];
 			UIImage *thumbnail = [asset thumbnail];
             [tiv setImage:thumbnail];
             [tiv setDuration:asset.duration];
@@ -275,7 +275,7 @@
 	}
     
     if (self.editing){
-        Asset *asset = [_assets objectAtIndex:tappedIndex];
+        Asset *asset = _assets[tappedIndex];
         if (asset.selected){
             [self deselectItemsFromIndex:tappedIndex];
         }
@@ -327,7 +327,7 @@
 - (void)selectItemsFromIndex:(NSUInteger)index
 {
     for (NSUInteger i = index ; i < [_assets count] ; i++){
-        Asset *a = [_assets objectAtIndex:i];
+        Asset *a = _assets[i];
         if (a.selected){break;} //already selected? - Stop!
         a.selected = YES;
 		_selectedItemsCount++;
@@ -340,7 +340,7 @@
 - (void)deselectItemsFromIndex:(NSUInteger)index
 {
     for (NSUInteger i = index ; i < [_assets count] ; i++){
-        Asset *a = [_assets objectAtIndex:i];
+        Asset *a = _assets[i];
         if (!a.selected){break;} //already de-selected? - Stop!
         a.selected = NO;
 		_selectedItemsCount--;
@@ -352,7 +352,7 @@
 
 - (void)selectItemAtIndex:(NSUInteger)index
 {
-	Asset *a = [_assets objectAtIndex:index];
+	Asset *a = _assets[index];
 	if (a.selected){
 		return;
 	}
@@ -365,7 +365,7 @@
 
 - (void)deselectItemAtIndex:(NSUInteger)index
 {
-	Asset *a = [_assets objectAtIndex:index];
+	Asset *a = _assets[index];
 	if (!a.selected){
 		return;
 	}
@@ -379,7 +379,7 @@
 
 - (void)toggleSelectionOfItemAtIndex:(NSUInteger)index
 {
-    Asset *a = [_assets objectAtIndex:index];
+    Asset *a = _assets[index];
     if (a.selected){ //deselect
         a.selected = NO;
         _selectedItemsCount--;

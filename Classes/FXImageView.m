@@ -251,8 +251,8 @@
 - (void)setProcessedImageOnMainThread:(NSArray *)array
 {
     //get images
-    NSString *cacheKey = [array objectAtIndex:1];
-    UIImage *processedImage = [array objectAtIndex:0];
+    NSString *cacheKey = array[1];
+    UIImage *processedImage = array[0];
     processedImage = ([processedImage isKindOfClass:[NSNull class]])? nil: processedImage;
     
     if (processedImage)
@@ -381,10 +381,8 @@
     else
     {
         [self performSelectorOnMainThread:@selector(setProcessedImageOnMainThread:)
-                               withObject:[NSArray arrayWithObjects:
-                                           processedImage ?: [NSNull null],
-                                           cacheKey,
-                                           nil]
+                               withObject:@[processedImage ?: [NSNull null],
+                                           cacheKey]
                             waitUntilDone:YES];
     }
 }
@@ -414,7 +412,7 @@
     NSInteger index = [queue operationCount] - maxOperations;
     if (index >= 0)
     {
-        NSOperation *op = [[queue operations] objectAtIndex:index];
+        NSOperation *op = [queue operations][index];
         if (![op isExecuting])
         {
             [op addDependency:operation];

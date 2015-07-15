@@ -9,7 +9,7 @@
 #import <MediaPlayer/MPMoviePlayerController.h>
 #import "SlideShowViewController.h"
 
-#define kVideoSeekInc 1.0
+#define kVideoSeekInc 0.5
 
 
 //private interface
@@ -225,7 +225,7 @@
         moviePlayerToRelease = nil;
     }
     
-    Asset *asset = [assets objectAtIndex:index];
+    Asset *asset = assets[index];
     UIView *newView;
     
     if ([asset.type isEqualToString:kAssetTypeVideo]){
@@ -486,7 +486,15 @@
 	 ];	
 }
 
+
+
 - (void)showMovieProgress
+{
+    [self showMovieProgress:YES];
+}
+
+
+- (void)showMovieProgress:(BOOL)autoHide
 {
     if (! currentMoviePlayer ) return;
     
@@ -503,7 +511,9 @@
 	[backgroundView addSubview:movieProgressView];
     
     // auto hide the movieProgress after a delay
-    [self performSelector:@selector(hideMovieProgress) withObject:nil afterDelay:kMovieProgressAutoHideDelay];	
+    if (autoHide){
+        [self performSelector:@selector(hideMovieProgress) withObject:nil afterDelay:kMovieProgressAutoHideDelay];
+    }
 }
 
 
@@ -749,6 +759,7 @@
 - (void)playAction
 {
     if (currentMoviePlayer){
+        currentMoviePlayer.currentPlaybackRate = 1.0;
         [currentMoviePlayer play ];
     }else{
         [self start];
@@ -848,7 +859,7 @@
     if (currentMoviePlayer){
         //[currentMoviePlayer beginSeekingBackward];
         [self seekCurrentMoviePlayerBackward];
-        [self showMovieProgress];
+        //[self showMovieProgress];
     }
 }
 
@@ -860,7 +871,7 @@
     if (currentMoviePlayer){
         //[currentMoviePlayer beginSeekingForward];
         [self seekCurrentMoviePlayerForward];
-        [self showMovieProgress];
+        //[self showMovieProgress];
     }
 }
 
@@ -960,12 +971,14 @@
 
 - (void)seekCurrentMoviePlayerForward
 {
-    // is it seeking backward?
+    // is it seeking backward? go to normal play speed
     if ( currentMoviePlayer.currentPlaybackRate < 0){
         currentMoviePlayer.currentPlaybackRate = 1.0;
+        [self hideMovieProgress];
     }
     else{
         currentMoviePlayer.currentPlaybackRate += kVideoSeekInc;
+        [self showMovieProgress:NO];
         NSLog(@"seeking forward at: %f", currentMoviePlayer.currentPlaybackRate);
     }
 }
@@ -974,12 +987,14 @@
 
 - (void)seekCurrentMoviePlayerBackward
 {
-    // is it seeking forward?
+    // is it seeking forward? go to normal play speed
     if ( currentMoviePlayer.currentPlaybackRate > 1.0){
         currentMoviePlayer.currentPlaybackRate = 1.0;
+        [self hideMovieProgress];
     }
     else{
         currentMoviePlayer.currentPlaybackRate -= kVideoSeekInc;
+        [self showMovieProgress:NO];
         NSLog(@"seeking backward at: %f", currentMoviePlayer.currentPlaybackRate);
     }
 }

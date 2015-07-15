@@ -156,7 +156,7 @@
     }
     
     //cell content
-    id<Group> groupForCell = [self.groups objectAtIndex:indexPath.row]; 
+    id<Group> groupForCell = (self.groups)[indexPath.row]; 
     [cell setTitle:groupForCell.name];
 	[cell select:groupForCell.selected itemWithIndex:AlbumsTableViewCellCheckMark];
     [cell setPosterImage:groupForCell.posterImage];
@@ -189,7 +189,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {    
 	AlbumsTableViewCell *cell = (AlbumsTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	id<Group> group = [self.groups objectAtIndex:indexPath.row];
+	id<Group> group = (self.groups)[indexPath.row];
     [self tappedCell:cell atRow:indexPath.row withGroup:group];
 }
 
@@ -204,7 +204,7 @@
 //forward the event to the row, in case we are not interested in the taps in subviews
 - (void)forwardTapToCell:(AlbumsTableViewCell *)cell atRow:(NSUInteger)row
 {
-    id<Group> group = [self.groups objectAtIndex:row];
+    id<Group> group = (self.groups)[row];
     [self tappedCell:cell atRow:row withGroup:group];
 }
 
@@ -241,7 +241,7 @@
 {
     if(self.isEditing && index == AlbumsTableViewCellCheckMark){
         
-        id<Group> group = [self.groups objectAtIndex:cell.row];
+        id<Group> group = (self.groups)[cell.row];
         if (group.selected){
             [self deselectItemsFromIndex:cell.row];
         }
@@ -258,7 +258,7 @@
 
 - (void)selectItemAtIndex:(NSUInteger)index
 {
-	id<Group> a = [self.groups objectAtIndex:index];
+	id<Group> a = (self.groups)[index];
 	if (a.selected){
 		return;
 	}
@@ -270,7 +270,7 @@
 
 
 - (void)deselectItemAtIndex:(NSUInteger)index{
-	id<Group> a = [self.groups objectAtIndex:index];
+	id<Group> a = (self.groups)[index];
 	if (!a.selected){
 		return;
 	}
@@ -284,7 +284,7 @@
 - (void)selectItemsFromIndex:(NSUInteger)index
 {
     for (NSUInteger i = index ; i < [self.groups count] ; i++){
-        id<Group> a = [self.groups objectAtIndex:i];
+        id<Group> a = (self.groups)[i];
         if (a.selected){break;} //found a selected row - Done!
         a.selected = YES;
         _selectedItemsCount++;
@@ -297,7 +297,7 @@
 - (void)deselectItemsFromIndex:(NSUInteger)index
 {
     for (NSUInteger i = index ; i < [self.groups count] ; i++){
-        id<Group> a = [self.groups objectAtIndex:i];
+        id<Group> a = (self.groups)[i];
         if (!a.selected){break;} //found a de-selected row - Done!
         a.selected = NO;
         _selectedItemsCount--;
@@ -307,7 +307,7 @@
 
 - (void)toggleSelectionOfItemAtIndex:(NSUInteger)index
 {
-    id<Group> group = [self.groups objectAtIndex:index];
+    id<Group> group = (self.groups)[index];
     
     if (group.selected){ //deselect
         group.selected = NO;

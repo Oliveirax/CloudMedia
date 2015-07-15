@@ -232,7 +232,7 @@ static ClipboardManager* instance;
 		
 		// set the album as assets album
 		NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:newAlbumPath];
-		[album setObject:kContentTypeAssets forKey:keyAlbumContentType];
+		album[keyAlbumContentType] = kContentTypeAssets;
 		[FileUtils saveDictionaryInDataDir:album];
 		[album release];
 		
@@ -248,12 +248,12 @@ static ClipboardManager* instance;
 		
 		// set the album as assets album
 		NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:newAlbumPath];
-		[album setObject:kContentTypeAssets forKey:keyAlbumContentType];
+		album[keyAlbumContentType] = kContentTypeAssets;
 		[FileUtils saveDictionaryInDataDir:album];
 		[album release];
         
         //turn the files into assets
-        NSString *userDir = [[LibraryManager getInstance].currentUser objectForKey:keyUsersUserDirectoryPath ];
+        NSString *userDir = ([LibraryManager getInstance].currentUser)[keyUsersUserDirectoryPath];
         NSMutableArray *assets = [[NSMutableArray alloc] init];
         Asset *asset;
         
@@ -304,7 +304,7 @@ static ClipboardManager* instance;
     else if(contentType == contentTypeFiles){
         
         //turn the files into assets
-        NSString *userDir = [[LibraryManager getInstance].currentUser objectForKey:keyUsersUserDirectoryPath ];
+        NSString *userDir = ([LibraryManager getInstance].currentUser)[keyUsersUserDirectoryPath];
         NSMutableArray *assets = [[NSMutableArray alloc] init];
         Asset *asset;
         
@@ -418,7 +418,7 @@ static ClipboardManager* instance;
 	
 	// set the album as assets album
 	NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:newAlbumPath];
-	[album setObject:kContentTypeAssets forKey:keyAlbumContentType];
+	album[keyAlbumContentType] = kContentTypeAssets;
     [FileUtils saveDictionaryInDataDir:album];
     [album release];
 
@@ -461,14 +461,14 @@ static ClipboardManager* instance;
     NSMutableDictionary *album = [FileUtils newDictionaryFromFileInDataDir:albumFilePath];
     
 	
-    NSMutableArray *itemsArray = [album objectForKey:keyAlbumItemsArray];
+    NSMutableArray *itemsArray = album[keyAlbumItemsArray];
 
     for (Asset *asset in assets){
         
        // if (operationMode == operationModeCopy){
             // save ALAsset to disk
             if (asset.isALAsset){
-				NSString *path = [[LibraryManager getInstance].currentUser objectForKey:keyUsersUserDirectoryPath ];
+				NSString *path = ([LibraryManager getInstance].currentUser)[keyUsersUserDirectoryPath];
                 [FileUtils saveALAsset:asset inUserDir:path withTaskProgressDelegate:taskProgressDelegate andProgressPerByte:progressPerByte];
                 NSLog(@"Saved Asset: %@", [asset  mediaFilePath]);
             }

@@ -46,10 +46,10 @@
 - (id)initWithDictionary:(NSMutableDictionary *)dict
 {
     if ((self = [super init])){
-        selfFilePath = [[dict objectForKey:keySelfFilePath]copy];
-        thumbFilePath = [[dict objectForKey:keyAlbumThumbFilePath]copy];
-        name = [[dict objectForKey:keyAlbumName]copy];
-        numberOfGroups = [[dict objectForKey:keyAlbumItemsArray]count];
+        selfFilePath = [dict[keySelfFilePath]copy];
+        thumbFilePath = [dict[keyAlbumThumbFilePath]copy];
+        name = [dict[keyAlbumName]copy];
+        numberOfGroups = [dict[keyAlbumItemsArray]count];
         
         image = nil;
 		isALAsset = NO;
@@ -163,14 +163,14 @@
         NSLog(@"enumerate groups from library %@",selfFilePath);
         NSMutableDictionary *library = [FileUtils newDictionaryFromFileInDataDir:selfFilePath];
         groups = [[NSMutableArray alloc]init];
-        NSMutableArray *items = [library objectForKey:keyAlbumItemsArray];
+        NSMutableArray *items = library[keyAlbumItemsArray];
         
         for(NSString *itemPath in items){
             
             NSMutableDictionary *itemDict = [FileUtils newDictionaryFromFileInDataDir:itemPath];
             
             // item is a AssetsLibrary
-            if ([[itemDict objectForKey:keyAlbumContentType]isEqualToString:kContentTypeAlbums]){
+            if ([itemDict[keyAlbumContentType]isEqualToString:kContentTypeAlbums]){
                 AssetsLibrary *lib = [[AssetsLibrary alloc ]initWithDictionary:itemDict];
                 [groups addObject:lib];
                 [lib release];
@@ -208,7 +208,7 @@
                 //get an image from this library's contents
                 if ( self.numberOfItems > 0){
                     NSMutableArray *groups = [[self enumerateGroups] retain];
-                    NSObject<Group> *group = [groups objectAtIndex:0];
+                    NSObject<Group> *group = groups[0];
                     image = [[group posterImage] retain];
                     [groups release];
                     
@@ -221,7 +221,7 @@
                     
                     //add the thumb to this library
                     NSMutableDictionary *library = [FileUtils newDictionaryFromFileInDataDir:selfFilePath];
-                    [library setObject:thumbFilePath forKey:keyAlbumThumbFilePath];
+                    library[keyAlbumThumbFilePath] = thumbFilePath;
                     [FileUtils saveDictionaryInDataDir:library];
                     [library release];
                 }

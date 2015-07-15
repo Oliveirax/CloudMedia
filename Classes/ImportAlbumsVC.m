@@ -49,7 +49,7 @@
 - (id)initWithCurrentLibrary
 {
     NSMutableDictionary *currLibrary  = [[LibraryManager getInstance] currentLibrary];
-    AssetsLibrary *library = [[AssetsLibrary alloc]initWithPath:[currLibrary objectForKey:keyLibraryRootAlbumPath]];
+    AssetsLibrary *library = [[AssetsLibrary alloc]initWithPath:currLibrary[keyLibraryRootAlbumPath]];
 	if ((self = [super initWithLibrary:[library autorelease]])) {
         _type = ModalViewControllerTypeImportFromLibrary;  // import from current lib
     }

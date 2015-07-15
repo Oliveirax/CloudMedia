@@ -55,13 +55,13 @@
         
         //save size
         long long size = [[_theALAsset defaultRepresentation]size];
-        [_properties setValue:[NSNumber numberWithLongLong:size] forKey:keyAssetSize];
+        [_properties setValue:@(size) forKey:keyAssetSize];
         
         //save type and duration
         NSString *type = [_theALAsset valueForProperty:ALAssetPropertyType];
         if ([type isEqualToString:ALAssetTypePhoto]){
             [_properties setValue:kAssetTypeImage forKey:keyAssetType];
-            [_properties setValue:[NSNumber numberWithDouble:-1] forKey:keyAssetDuration];
+            [_properties setValue:@-1.0 forKey:keyAssetDuration];
         }
         else if ([type isEqualToString:ALAssetTypeVideo]){
             [_properties setValue:kAssetTypeVideo forKey:keyAssetType];
@@ -101,7 +101,7 @@
 			
 		}
 		else{
-            NSString *path = [[LibraryManager getInstance] addDataDirTo:[_properties objectForKey:keyAssetThumbFilePath]];
+            NSString *path = [[LibraryManager getInstance] addDataDirTo:_properties[keyAssetThumbFilePath]];
             UIImage *temp  = [UIImage imageWithContentsOfFile:path];
             _thumbnail = [[UIImage alloc] initWithCGImage:temp.CGImage scale:[[UIScreen mainScreen] scale] orientation:UIImageOrientationUp];
            // thumbnailImage = [[UIImage imageWithContentsOfFile:path]retain];
@@ -125,13 +125,13 @@
         }
         else{
             if ([[self type] isEqualToString:kAssetTypeImage]){
-                NSString *path = [[LibraryManager getInstance] addDataDirTo:[_properties objectForKey:keyAssetMediaFilePath]];
-                NSLog(@"Asset retrieving image: %@",[_properties objectForKey:keyAssetMediaFilePath]);
+                NSString *path = [[LibraryManager getInstance] addDataDirTo:_properties[keyAssetMediaFilePath]];
+                NSLog(@"Asset retrieving image: %@",_properties[keyAssetMediaFilePath]);
                 fsImage1 = [UIImage imageWithContentsOfFile:path];
             }
             else if ([[self type]isEqualToString:kAssetTypeVideo]){
-                NSString *path = [[LibraryManager getInstance] addDataDirTo:[_properties objectForKey:keyAssetFullScreenFilePath]];
-                NSLog(@"Asset retrieving vidcap: %@",[_properties objectForKey:keyAssetFullScreenFilePath]);
+                NSString *path = [[LibraryManager getInstance] addDataDirTo:_properties[keyAssetFullScreenFilePath]];
+                NSLog(@"Asset retrieving vidcap: %@",_properties[keyAssetFullScreenFilePath]);
                 fsImage1 = [UIImage imageWithContentsOfFile:path];
             }
             else{
@@ -149,69 +149,69 @@
 
 - (NSString *)mediaFilePath
 {
-    return [_properties objectForKey:keyAssetMediaFilePath];
+    return _properties[keyAssetMediaFilePath];
 }
 
 
 
 - (void)setMediaFilePath:(NSString *)mediaFilePath
 {
-    [_properties setObject:mediaFilePath forKey:keyAssetMediaFilePath];
+    _properties[keyAssetMediaFilePath] = mediaFilePath;
 }
 
 
 
 - (NSString *)fullScreenFilePath
 {
-    return [_properties objectForKey:keyAssetFullScreenFilePath];
+    return _properties[keyAssetFullScreenFilePath];
 }
 
 
 
 - (void)setFullScreenFilePath:(NSString *)fullScreenFilePath
 {
-    [_properties setObject:fullScreenFilePath forKey:keyAssetFullScreenFilePath];
+    _properties[keyAssetFullScreenFilePath] = fullScreenFilePath;
 }
 
 
 - (NSString *)vidCapFilePath
 {
-    return [_properties objectForKey:keyAssetVidcapFilePath];
+    return _properties[keyAssetVidcapFilePath];
 }
 
 
 
 - (void)setVidCapFilePath:(NSString *)vidCapFilePath
 {
-    [_properties setObject:vidCapFilePath forKey:keyAssetVidcapFilePath];
+    _properties[keyAssetVidcapFilePath] = vidCapFilePath;
 }
 
 
 
 - (NSString *)thumbFilePath
 {
-    return [_properties objectForKey:keyAssetThumbFilePath];
+    return _properties[keyAssetThumbFilePath];
 }
 
 
 
 - (void)setThumbFilePath:(NSString *)thumbFilePath
 {
-    [_properties setObject:thumbFilePath forKey:keyAssetThumbFilePath];
+    _properties[keyAssetThumbFilePath] = thumbFilePath;
 }
 
 
 
 - (NSString *)type
 {
-    return [_properties objectForKey:keyAssetType];
+    return _properties[keyAssetType];
 }
 
 
 
 - (long long)size
 {
-    return [[_properties objectForKey:keyAssetSize]longLongValue];
+    return [_properties[keyAssetSize]longLongValue];
 }
 
 
@@ -224,7 +224,7 @@
 		url = [assetRepresentation url];
 	}
 	else {
-        NSString *path = [[LibraryManager getInstance] addDataDirTo:[_properties objectForKey:keyAssetMediaFilePath]];
+        NSString *path = [[LibraryManager getInstance] addDataDirTo:_properties[keyAssetMediaFilePath]];
         url = [NSURL fileURLWithPath:path isDirectory:NO];
 	}
 
@@ -233,8 +233,8 @@
 
 - (CGFloat)duration
 {
-    if ( [_properties objectForKey:keyAssetDuration]){
-        return [[_properties objectForKey:keyAssetDuration]floatValue];
+    if ( _properties[keyAssetDuration]){
+        return [_properties[keyAssetDuration]floatValue];
     }
     return -1;
 }

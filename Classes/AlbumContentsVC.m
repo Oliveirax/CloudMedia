@@ -286,7 +286,7 @@
 - (void)taskProgressed:(CGFloat)amount
 {
     // UI elements must be updated in main thread
-    [self performSelectorOnMainThread:@selector(taskProgressedHelper:) withObject:[NSNumber numberWithFloat:amount] waitUntilDone:NO];
+    [self performSelectorOnMainThread:@selector(taskProgressedHelper:) withObject:@(amount) waitUntilDone:NO];
 }
 
 
