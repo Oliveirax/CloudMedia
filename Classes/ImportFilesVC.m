@@ -364,7 +364,7 @@
 - (void)selectAllItems
 {
     for (NSUInteger i = 0 ; i < _selection.count ; i++){
-        _selection[index] = @YES;
+        _selection[i] = @YES;
         
     }
     _selectedItemsCount=_selection.count;

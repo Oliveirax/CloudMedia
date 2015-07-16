@@ -28,7 +28,7 @@
     // root view controller
     LibraryManager *lm = [LibraryManager getInstance];
     NSMutableDictionary *library  = [lm currentLibrary];
-    AssetsLibrary *al = [[AssetsLibrary alloc]initWithPath:library[keyLibraryRootAlbumPath]];
+    AssetsLibrary *al = [[AssetsLibrary alloc]initWithPath:[library objectForKey:keyLibraryRootAlbumPath]];
     //AlbumsViewController *avc = [[AlbumsViewController alloc]initWithLibrary:al];
     AlbumsVC *avc = [[AlbumsVC alloc]initWithLibrary:al];
     UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:avc];
