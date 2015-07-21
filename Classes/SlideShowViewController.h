@@ -11,8 +11,8 @@
 #import "GestureRecognizerOverlayView.h"
 #import "MovieProgressView.h"
 
-#define SlideShowDefaultTransitionDelay 1
-#define SlideShowDefaultDelay 4
+#define kSlideShowDefaultTransitionDelay 1
+#define kSlideShowDefaultDelay 4
 #define kFadeDelay 0.3
 #define kAutoHideDelay 5
 #define kMovieProgressAutoHideDelay 2
@@ -39,8 +39,6 @@
     
 	UIView *backgroundView;
     GestureRecognizerOverlayView *grOverlayView;
-	UIImageView *playOverlayView;
-	UIImageView *pauseOverlayView;
     MovieProgressView *movieProgressView;
 	UIView *currentView;
 	UIView *nextView;
@@ -50,8 +48,13 @@
 	
 	BOOL transitioning;
 	BOOL playing;
-	
-	
+    
+    // overlay icons
+    UIImageView *_iconPlay;
+    UIImageView *_iconPause;
+    UIImageView *_iconFF;
+    UIImageView *_iconRW;
+    UILabel *_iconSpeed;
 }
 
 @property(nonatomic,assign) CGFloat transitionDelay;

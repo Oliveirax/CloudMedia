@@ -15,48 +15,6 @@
 //private interface
 @interface SlideShowViewController()
 
-//movie seeking properties
-
-// Loading Assets into Views
-- (void)loadView:(UIView **)view withAssetAtIndex:(NSInteger)index;
-- (void)loadNextItem;
-- (void)loadPreviousItem;
-
-// Animating Bars Show/Hide
-- (BOOL)showBars;
-- (BOOL)hideBars;
-
-//Animating Overlays
-- (void)flashPlayOverlay;
-- (void)flashPauseOverlay;
-- (void)showMovieProgress;
-- (void)hideMovieProgress;
-
-// Animating Transitions
-- (void)performTransition;
-- (void)performTransition2;
-- (void)performTransition1;
-
-//SlideShow Control
-- (void)start; //public
-- (void)stop;  //public
-- (void)previous;
-- (void)next;
-
-//Button Actions
-- (void)playAction;
-- (void)pauseAction;
-- (void)previousAction;
-- (void)nextAction;
-- (void)doneAction;
-
-//Stopping and Releasing a MoviePlayer
-- (void)stopMoviePlayer:(MPMoviePlayerController **)mPlayer releaseImmediately:(BOOL)releaseImmediately;
-
-
-//Notification Delegates
-- (void)moviePlayerFinished:(NSNotification*)notification; //movie player finished
-- (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag; // core animation delegate
 
 @end
 
@@ -110,8 +68,8 @@
 		[pauseButton release];
 		
 		
-		transitionDelay = SlideShowDefaultTransitionDelay;
-		slideShowDelay = SlideShowDefaultDelay;
+		transitionDelay = kSlideShowDefaultTransitionDelay;
+		slideShowDelay = kSlideShowDefaultDelay;
 		
 		timer = nil;
         
@@ -129,8 +87,10 @@
 	if (moviePlayerToRelease) [moviePlayerToRelease release];
 	[backgroundView release];
     [grOverlayView release];
-	[playOverlayView release];
-	[pauseOverlayView release];
+	[_iconPlay release];
+	[_iconPause release];
+    [_iconFF release];
+    [_iconRW release];
     [movieProgressView release];
     [super dealloc];
 }
@@ -147,9 +107,18 @@
 	backgroundView.tag = -1;
 	self.view = backgroundView;
 	
-    //overlay buttons
-	playOverlayView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PlayOverlay"]];
-	pauseOverlayView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"PauseOverlay"]];
+    //overlay icons
+	_iconPlay = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"play"]];
+	_iconPause = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pause"]];
+    _iconFF = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"forward"]];
+    _iconRW = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rewind"]];
+    
+    // movie speed, adjusted for 64x64 points icon
+    _iconSpeed = [[UILabel alloc] initWithFrame:CGRectMake(22, 44, 20, 20)];
+    _iconSpeed.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+    _iconSpeed.textColor = [UIColor whiteColor];
+    _iconSpeed.font = [UIFont systemFontOfSize:10];
+    _iconSpeed.textAlignment = UITextAlignmentCenter;
     
     //overlay progressBarView
     movieProgressView = [[MovieProgressView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
@@ -451,50 +420,42 @@
 
 #pragma mark - Animating Overlays
 
-- (void)flashPlayOverlay
+- (void)flashOverlay:(UIView *)overlay
 {
-	playOverlayView.alpha = 1.0;
-	playOverlayView.center = backgroundView.center;
+    //UIView *overlay;
+    
+    // show speed
+    if ( currentMoviePlayer.currentPlaybackRate != 1.0 && currentMoviePlayer.currentPlaybackRate != 0.0){
+        _iconSpeed.text = [NSString stringWithFormat:@"%1.1fx", fabsf(currentMoviePlayer.currentPlaybackRate)];
+        //_iconSpeed.center = overlay.center;
+        [overlay addSubview:_iconSpeed];
+    }
+    
+	overlay.alpha = 1.0;
+	overlay.center = backgroundView.center;
 	
-	[backgroundView addSubview:playOverlayView];
+	[backgroundView addSubview:overlay];
 	
 	[UIView animateWithDuration:1.5
 					 animations:^{ 	
-						 playOverlayView.alpha = 0.0;
+						 overlay.alpha = 0.0;
 					 }  
 					 completion:^(BOOL finished) {
-						 [playOverlayView removeFromSuperview];
+						 [overlay removeFromSuperview];
 					 }
 	 ];	
 }
 
-
-- (void)flashPauseOverlay
-{
-	pauseOverlayView.alpha = 1.0;
-	pauseOverlayView.center = backgroundView.center;
-	
-	[backgroundView addSubview:pauseOverlayView];
-	
-	[UIView animateWithDuration:1.5
-					 animations:^{ 	
-						 pauseOverlayView.alpha = 0.0;
-					 }  
-					 completion:^(BOOL finished) {
-						 [pauseOverlayView removeFromSuperview];
-					 }
-	 ];	
-}
 
 
 
 - (void)showMovieProgress
 {
-    [self showMovieProgress:YES];
+    [self showMovieProgressAndAutoHide:YES];
 }
 
 
-- (void)showMovieProgress:(BOOL)autoHide
+- (void)showMovieProgressAndAutoHide:(BOOL)autoHide
 {
     if (! currentMoviePlayer ) return;
     
@@ -765,7 +726,7 @@
         [self start];
     }
     
-    [self flashPlayOverlay];
+    [self flashOverlay:_iconPlay];
     [self hideBars];
 }
 
@@ -778,7 +739,7 @@
         [self stop];
     }
     
-    [self flashPauseOverlay];
+    [self flashOverlay:_iconPause];
     [self showBars];
 }
 
@@ -971,14 +932,16 @@
 
 - (void)seekCurrentMoviePlayerForward
 {
-    // is it seeking backward? go to normal play speed
-    if ( currentMoviePlayer.currentPlaybackRate < 0){
+    // is it seeking backward or in slow motion? go to normal play speed
+    if ( currentMoviePlayer.currentPlaybackRate < 1.0){
         currentMoviePlayer.currentPlaybackRate = 1.0;
+        [self flashOverlay:_iconPlay];
         [self hideMovieProgress];
     }
     else{
         currentMoviePlayer.currentPlaybackRate += kVideoSeekInc;
-        [self showMovieProgress:NO];
+        [self showMovieProgressAndAutoHide:NO];
+        [self flashOverlay:_iconFF];
         NSLog(@"seeking forward at: %f", currentMoviePlayer.currentPlaybackRate);
     }
 }
@@ -990,11 +953,29 @@
     // is it seeking forward? go to normal play speed
     if ( currentMoviePlayer.currentPlaybackRate > 1.0){
         currentMoviePlayer.currentPlaybackRate = 1.0;
+        [self flashOverlay:_iconPlay];
         [self hideMovieProgress];
     }
     else{
         currentMoviePlayer.currentPlaybackRate -= kVideoSeekInc;
-        [self showMovieProgress:NO];
+        
+        //don't stop! go imediately to reverse play
+        if( currentMoviePlayer.currentPlaybackRate == 0.0){
+            currentMoviePlayer.currentPlaybackRate = - 1.0;
+        }
+        
+        // slow motion
+        if ( currentMoviePlayer.currentPlaybackRate > 0.0){
+            [self flashOverlay:_iconPlay];
+            [self hideMovieProgress];
+        }
+        else{
+            [self showMovieProgressAndAutoHide:NO];
+            [self flashOverlay:_iconRW];
+        }
+        
+        
+        
         NSLog(@"seeking backward at: %f", currentMoviePlayer.currentPlaybackRate);
     }
 }
@@ -1006,6 +987,7 @@
     //is it seeking?
     if (currentMoviePlayer.currentPlaybackRate > 1.0 || currentMoviePlayer.currentPlaybackRate < 0){
         currentMoviePlayer.currentPlaybackRate = 1.0;
+        [self flashOverlay:_iconPlay];
     }
 }
 
